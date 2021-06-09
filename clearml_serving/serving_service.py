@@ -535,10 +535,9 @@ class ServingService(object):
             with open((folder / 'config.pbtxt').as_posix(), 'wt') as f:
                 f.write(endpoint.model_config_blob)
 
-            print('[INFO] About to try to download the model')
-
             # download model versions
             for version, model_id in self.get_endpoint_version_model_id(serving_url=url).items():
+                print('[INFO]:: Model_ID: {0} Version: {1}'.format(model_id, version))
                 model_folder = folder / str(version)
 
                 model_folder.mkdir(parents=True, exist_ok=True)
@@ -546,6 +545,7 @@ class ServingService(object):
                 # noinspection PyBroadException
                 try:
                     model = InputModel(model_id)
+                    print(model)
                     local_path = model.get_local_copy()
                 except Exception:
                     local_path = None
