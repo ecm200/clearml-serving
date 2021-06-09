@@ -528,8 +528,8 @@ class ServingService(object):
         if verbose:
             print('Updating local model folder: {}'.format(model_repository_folder))
 
-        print('HERE')
         for url, endpoint in self.get_endpoints().items():
+            print('[INFO]:: URL: {0} Endpoint: {1}'.format(url, endpoint))
             folder = Path(model_repository_folder) / url
             folder.mkdir(parents=True, exist_ok=True)
             with open((folder / 'config.pbtxt').as_posix(), 'wt') as f:
