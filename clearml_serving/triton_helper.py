@@ -205,7 +205,7 @@ def main():
              'Default is 0')
 
     args = parser.parse_args()
-    task = Task.init(project_name=args.project, task_name=args.name, task_type=Task.TaskTypes.inference)
+    task = Task.init(project_name=args.project, task_name=args.name, task_type=Task.TaskTypes.inference, output_uri='azure://clearmllibrary/artefacts')
     helper = TritonHelper(args, task, serving_id=args.serving_id)
     # this function will never end
     helper.maintenance_daemon(
