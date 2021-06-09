@@ -110,6 +110,7 @@ class ServingService(object):
 
         # normalize endpoint url
         serving_url = str(serving_url).strip('/')
+        print('[INFO] Serving Model URL:: {0}'.format(serving_url))
 
         endpoint = self.EndPoint(
             serving_url=serving_url,
@@ -195,14 +196,33 @@ class ServingService(object):
                 project_name=self._task.get_project_name(),
                 task_name="triton serving engine",
                 task_type=Task.TaskTypes.inference,
-                repo="https://github.com/allegroai/clearml-serving.git",
+                repo="https://github.com/ecm200/clearml-serving.git",
                 branch="main",
-                commit="ad049c51c146e9b7852f87e2f040e97d88848a1f",
+                commit="b6355a1db8da307750e37e9cb37a5fc23876c8dd",
                 script="clearml_serving/triton_helper.py",
                 working_directory=".",
-                docker="nvcr.io/nvidia/tritonserver:21.03-py3 --ipc=host -p 8000:8000 -p 8001:8001 -p 8002:8002",
+                docker="nvcr.io/nvidia/tritonserver:21.03-py3 --ipc=host ", # removed -p 8000:8000 -p 8001:8001 -p 8002:8002
                 argparse_args=[('serving_id', self._task.id), ],
                 add_task_init_call=False,
+                #docker_bash_setup_script='''
+                ##!/bin/bash
+                #if [ -f "/opt/conda/etc/profile.d/conda.sh" ]; then
+                #    . /opt/conda/etc/profile.d/conda.sh
+                #    conda activate base
+                #else
+                #    apt-get update
+                #    apt-get dist-upgrade -y
+                #    apt-get install -y python3-pip python3-dev wget bzip2 libopenblas-dev pbzip2 libgl1-mesa-glx
+                #    apt-get clean
+                #    rm -rf /var/lib/apt/lists/*
+                #    wget  quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
+                #    /bin/bash ~/miniconda.sh -b -p /opt/conda
+                #    rm ~/miniconda.sh
+                #    /opt/conda/bin/conda clean -tipsy
+                #    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
+                #    echo “. /opt/conda/etc/profile.d/conda.sh” >> ~/.bashrc
+                #    echo “conda activate base” >> ~/.bashrc
+                #'''
             )
             if verbose:
                 print('Launching engine {} on queue {}'.format(self._engine_type, queue_id or queue_name))
@@ -508,11 +528,14 @@ class ServingService(object):
         if verbose:
             print('Updating local model folder: {}'.format(model_repository_folder))
 
+        print('HERE')
         for url, endpoint in self.get_endpoints().items():
             folder = Path(model_repository_folder) / url
             folder.mkdir(parents=True, exist_ok=True)
             with open((folder / 'config.pbtxt').as_posix(), 'wt') as f:
                 f.write(endpoint.model_config_blob)
+
+            print('[INFO] About to try to download the model')
 
             # download model versions
             for version, model_id in self.get_endpoint_version_model_id(serving_url=url).items():
