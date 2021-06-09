@@ -6,6 +6,7 @@ from time import time
 from typing import Optional, Union, Dict, Sequence
 
 from attr import attrib, attrs, asdict
+from clearml.model import OutputModel
 from pathlib2 import Path
 
 from clearml import Task, Model, InputModel
@@ -196,14 +197,15 @@ class ServingService(object):
                 project_name=self._task.get_project_name(),
                 task_name="triton serving engine",
                 task_type=Task.TaskTypes.inference,
-                repo="https://github.com/ecm200/clearml-serving.git",
+                repo="https://github.com/ecm200/clearml-serving.git", # for testing purposes, get the forked copy of the clearml-serving package.
                 branch="main",
-                #commit="b6355a1db8da307750e37e9cb37a5fc23876c8dd",
+                #commit="b6355a1db8da307750e37e9cb37a5fc23876c8dd", # need to grab the latest commit automatically
                 script="clearml_serving/triton_helper.py",
                 working_directory=".",
                 docker="nvcr.io/nvidia/tritonserver:21.03-py3 --ipc=host ", # removed -p 8000:8000 -p 8001:8001 -p 8002:8002
                 argparse_args=[('serving_id', self._task.id), ],
                 add_task_init_call=False,
+                packages=['azure-storage-blob==2.1.0'], # added as suspected Azure SDK was needed for Blob Store access.
                 #docker_bash_setup_script='''
                 ##!/bin/bash
                 #if [ -f "/opt/conda/etc/profile.d/conda.sh" ]; then
@@ -537,7 +539,7 @@ class ServingService(object):
 
             # download model versions
             for version, model_id in self.get_endpoint_version_model_id(serving_url=url).items():
-                print('[INFO]:: Model_ID: {0} Version: {1}'.format(model_id, version))
+                print('[INFO]:: Model ID: {0} Version: {1}'.format(model_id, version))
                 model_folder = folder / str(version)
 
                 model_folder.mkdir(parents=True, exist_ok=True)
@@ -545,7 +547,7 @@ class ServingService(object):
                 # noinspection PyBroadException
                 try:
                     model = InputModel(model_id)
-                    print(model)
+                    print('[INFO]:: Model ID: {0} Model URL: {1}'.format(model_id, model.url))
                     local_path = model.get_local_copy()
                 except Exception:
                     local_path = None
