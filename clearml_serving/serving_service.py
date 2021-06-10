@@ -594,7 +594,10 @@ class ServingService(object):
                         old_file.unlink()
                 print('[INFO] Target Path:: {}'.format(target_path))
                 print('[INFO] Local Path:: {}'.format(local_path))
-                
+                new_target_path = Path(os.path.join(target_path.parent),'model.pt')
+                shutil.move(target_path.as_posix(), new_target_path.as_posix())
+                print('[INFO] New Target Path:: {}'.format(new_target_path))
+
 
     def __state_hash(self):
         # type: () -> int
