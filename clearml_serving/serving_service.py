@@ -207,25 +207,6 @@ class ServingService(object):
                 argparse_args=[('serving_id', self._task.id), ],
                 add_task_init_call=False,
                 packages=['azure-storage-blob==2.1.0'], # added as suspected Azure SDK was needed for Blob Store access.
-                #docker_bash_setup_script='''
-                ##!/bin/bash
-                #if [ -f "/opt/conda/etc/profile.d/conda.sh" ]; then
-                #    . /opt/conda/etc/profile.d/conda.sh
-                #    conda activate base
-                #else
-                #    apt-get update
-                #    apt-get dist-upgrade -y
-                #    apt-get install -y python3-pip python3-dev wget bzip2 libopenblas-dev pbzip2 libgl1-mesa-glx
-                #    apt-get clean
-                #    rm -rf /var/lib/apt/lists/*
-                #    wget  quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh
-                #    /bin/bash ~/miniconda.sh -b -p /opt/conda
-                #    rm ~/miniconda.sh
-                #    /opt/conda/bin/conda clean -tipsy
-                #    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
-                #    echo “. /opt/conda/etc/profile.d/conda.sh” >> ~/.bashrc
-                #    echo “conda activate base” >> ~/.bashrc
-                #'''
             )
             if verbose:
                 print('Launching engine {} on queue {}'.format(self._engine_type, queue_id or queue_name))
