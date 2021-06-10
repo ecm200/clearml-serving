@@ -552,7 +552,6 @@ class ServingService(object):
                     print('[INFO]:: Model ID: {0} Model URL: {1}'.format(model_id, model.url))
                     local_path = model.get_local_copy()
                     print('[INFO] Local path to the model: {}'.format(local_path))
-                    print(os.listdir(local_path))
                 except Exception:
                     local_path = None
                 if not local_path:
@@ -593,6 +592,9 @@ class ServingService(object):
                     shutil.move(local_path.as_posix(), target_path.as_posix())
                     if old_file:
                         old_file.unlink()
+                print('[INFO] Target Path:: {}'.format(target_path))
+                print('[INFO] Local Path:: {}'.format(local_path))
+                
 
     def __state_hash(self):
         # type: () -> int
