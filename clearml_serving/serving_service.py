@@ -1,3 +1,4 @@
+import os
 import json
 import shutil
 from logging import getLogger
@@ -515,6 +516,7 @@ class ServingService(object):
 
         self._serialize()
 
+    
     def triton_model_service_update_step(self, model_repository_folder=None, verbose=True):
         # type: (Optional[str], bool) -> None
 
@@ -549,6 +551,8 @@ class ServingService(object):
                     model = InputModel(model_id)
                     print('[INFO]:: Model ID: {0} Model URL: {1}'.format(model_id, model.url))
                     local_path = model.get_local_copy()
+                    print('[INFO] Local path to the model: {}'.format(local_path))
+                    print(os.listdir(local_path))
                 except Exception:
                     local_path = None
                 if not local_path:
